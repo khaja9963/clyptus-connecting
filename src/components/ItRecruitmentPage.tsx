@@ -2,17 +2,17 @@ import React, { useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArcCarouselStaffingServices } from './ArcCarouselStaffingServices';
 import { ScreeningProcessCarousel } from './ScreeningProcessCarousel';
-import { 
-  Users, 
-  Globe, 
-  ShieldCheck, 
-  ArrowRight, 
-  ChevronDown, 
-  CheckCircle2, 
-  Building2, 
-  Search, 
-  UserCheck, 
-  Clock, 
+import {
+  Users,
+  Globe,
+  ShieldCheck,
+  ArrowRight,
+  ChevronDown,
+  CheckCircle2,
+  Building2,
+  Search,
+  UserCheck,
+  Clock,
   ExternalLink,
   X
 } from 'lucide-react';
@@ -253,7 +253,7 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
 
   return (
     <div className="w-full bg-slate-50 text-slate-900 font-sans selection:bg-sky-500/20 selection:text-sky-800">
-      
+
 
 
       {/* ---------------------------------------------------- */}
@@ -266,7 +266,7 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
         <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
 
         <div className="relative max-w-5xl mx-auto flex flex-col items-center text-center">
-          
+
           {/* Context Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200/80 text-sky-700 shadow-xs mb-6 animate-in fade-in slide-in-from-bottom-2">
             <Users className="w-4 h-4 text-sky-600" />
@@ -289,7 +289,7 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
               <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping shrink-0" />
               <span>This page is tailored for enterprise employers and companies seeking talent.</span>
             </div>
-            <button 
+            <button
               onClick={() => setShowCareersModal(true)}
               className="text-sky-600 font-bold whitespace-nowrap hover:underline flex items-center gap-1 shrink-0"
             >
@@ -318,7 +318,7 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto">
         <div className="relative rounded-3xl p-8 sm:p-12 bg-white border border-slate-200/90 shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
+
             <div className="lg:col-span-8">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-100 font-mono text-xs font-extrabold uppercase mb-4">
                 OVERVIEW & SCOPE
@@ -329,7 +329,7 @@ export const ItRecruitmentPage: React.FC<ItRecruitmentPageProps> = ({ onNavigate
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium mb-6">
                 Clyptus helps enterprises hire SAP and ERP specialists, IT engineers and senior leaders. We run permanent hiring, contract staffing, contract-to-hire and full recruitment process outsourcing, with delivery from India and offices in the UAE and USA.
               </p>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs font-bold text-slate-700 border-t border-slate-100 pt-6">
                 <div className="flex items-center gap-2">
                   <Globe className="w-4 h-4 text-sky-600" />

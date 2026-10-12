@@ -27,7 +27,7 @@ import { Footer } from './components/Footer';
 import { ResourceModal } from './components/ResourceModal';
 
 export function App() {
-  const [showIntro, setShowIntro] = useState<boolean>(false);
+  const [showIntro, setShowIntro] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<string>('Home');
   const [cards, setCards] = useState<SliderCard[]>(SLIDER_CARDS);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -88,7 +88,7 @@ export function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onToggleCustomizer={() => setIsCustomizerOpen(!isCustomizerOpen)}
-        onPlayIntro={() => {}}
+        onPlayIntro={() => setShowIntro(true)}
         onOpen3dServices={() => setIs3dServicesOpen(true)}
       />
 
@@ -227,13 +227,8 @@ export function App() {
           {/* 5 Feature Cards Animated Section + Curtain Reveal 3D Timeline */}
           <RisingSlideCardsSection />
 
-          {/* Clyptus Brandmark Particle Assembly & Early Dispersion Stage */}
-          <section
-            id="clyptus-logo-assemble-target"
-            className="relative z-10 py-16 px-4 w-full max-w-7xl mx-auto overflow-hidden bg-transparent select-none text-center"
-          >
-            <div className="relative w-full h-[360px] sm:h-[420px] mx-auto flex items-center justify-center pointer-events-auto" />
-          </section>
+          {/* Subtle white gap spacer above footer */}
+          <div className="w-full h-16 sm:h-20 bg-white" />
         </main>
       )}
 

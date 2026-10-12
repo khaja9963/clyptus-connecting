@@ -58,7 +58,7 @@ export const ContactSection: React.FC = () => {
   return (
     <section id="contact" className="w-full bg-slate-50 py-20 px-4 sm:px-8 lg:px-16 border-t border-slate-200 select-none relative">
       <div className="max-w-7xl mx-auto flex flex-col gap-16">
-        
+
         {/* Header Title */}
         <div className="text-center flex flex-col items-center gap-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono text-sky-700 font-bold uppercase shadow-sm">
@@ -179,7 +179,7 @@ export const ContactSection: React.FC = () => {
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
               Whether you require SAP implementation, IT staffing augmentation, or generative AI workflows, Clyptus engineered solutions deliver results.
             </p>
-            
+
             <div className="mt-4 pt-4 border-t border-white/10 flex flex-col gap-2 text-xs text-slate-300">
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-sky-400" />

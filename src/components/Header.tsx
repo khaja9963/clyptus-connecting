@@ -30,21 +30,21 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-sm select-none">
       {/* Main Navbar */}
       <div className="w-full px-4 sm:px-6 lg:px-10 py-3 flex items-center justify-between gap-4">
-        
+
         {/* Brand Logo */}
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={() => {
               onNavigate('Home');
               onPlayIntro();
               window.scrollTo({ top: 0, behavior: 'smooth' });
-            }} 
+            }}
             className="flex items-center group text-left py-1"
           >
-            <img 
-              src="/logo.png" 
-              alt="Clyptus Logo" 
-              className="h-11 sm:h-13 w-auto object-contain group-hover:scale-105 transition-transform" 
+            <img
+              src="/logo.png"
+              alt="Clyptus Logo"
+              className="h-11 sm:h-13 w-auto object-contain group-hover:scale-105 transition-transform"
             />
           </button>
         </div>
@@ -58,11 +58,10 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 key={link}
                 onClick={() => onNavigate(link)}
-                className={`relative px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  isActive
+                className={`relative px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${isActive
                     ? 'bg-white text-slate-900 shadow-sm font-bold border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
+                  }`}
               >
                 {link}
                 {isActive && (
