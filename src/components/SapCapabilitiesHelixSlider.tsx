@@ -124,7 +124,7 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
       totalCards - 1,
       Math.floor(latest * totalCards)
     );
-    setActiveIndex(calculatedIndex);
+    setActiveIndex((prev) => (prev !== calculatedIndex ? calculatedIndex : prev));
   });
 
   const handleNext = () => {
@@ -135,12 +135,11 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
     setActiveIndex((prev) => (prev - 1 + totalCards) % totalCards);
   };
 
-
   return (
     <div
       ref={containerRef}
       id="core-capabilities"
-      className="relative w-full h-[350vh]"
+      className="relative w-full h-[220vh]"
     >
       {/* Sticky screen container */}
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto select-none overflow-hidden">
@@ -153,31 +152,22 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
             </span>
           </h2>
         </div>
-      {/* Top Header Telemetry & Controls */}
-      <div className="flex items-center justify-between gap-4 mb-3">
-        <div className="flex items-center gap-3">
-          <span className="px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-extrabold shadow-sm">
-            [ {String(activeIndex + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')} ]
-          </span>
-        </div>
-
-        {/* Carousel Prev / Next Controls */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handlePrev}
-            className="p-2.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 shadow-sm transition-all active:scale-95"
-            aria-label="Previous Capability"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="p-2.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 shadow-sm transition-all active:scale-95"
-            aria-label="Next Capability"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+      {/* Carousel Prev / Next Controls */}
+      <div className="flex items-center justify-end gap-2 mb-3">
+        <button
+          onClick={handlePrev}
+          className="p-2.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 shadow-sm transition-all active:scale-95 cursor-pointer"
+          aria-label="Previous Capability"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          onClick={handleNext}
+          className="p-2.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 shadow-sm transition-all active:scale-95 cursor-pointer"
+          aria-label="Next Capability"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* ================= DESKTOP 3D HELIX / SPIRAL STAGE (≥ 768px) ================= */}
@@ -190,6 +180,10 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
             if (offset < -totalCards / 2) offset += totalCards;
 
             const isCenter = offset === 0;
+            const absOffset = Math.abs(offset);
+
+            // Cull cards that are in the back to eliminate GPU strain (render only front 5 cards)
+            const isVisible = absOffset <= 2;
 
             // Mathematical Helix Curve Geometry
             const angleStep = (2 * Math.PI) / totalCards;
@@ -198,22 +192,21 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
             const radius = 380; // Distance from cylindrical center
             const x = Math.sin(currentAngle) * (radius * 0.85);
             const z = Math.cos(currentAngle) * radius - radius;
-            const y = Math.sin(currentAngle * 0.5) * 40 + offset * 12;
+            const y = Math.sin(currentAngle * 0.5) * 36 + offset * 10;
 
             const rotateY = (currentAngle * 180) / Math.PI;
-            const rotateZ = Math.sin(currentAngle) * -5;
+            const rotateZ = Math.sin(currentAngle) * -4;
 
             // Active Focus & Depth Cull Scale / Opacity Calculation
-            const absOffset = Math.abs(offset);
             const opacity = isCenter
               ? 1
               : absOffset === 1
               ? 0.75
               : absOffset === 2
-              ? 0.4
-              : 0.15;
+              ? 0.35
+              : 0;
 
-            const scale = isCenter ? 1.05 : Math.max(0.72, 1 - absOffset * 0.12);
+            const scale = isCenter ? 1.05 : Math.max(0.75, 1 - absOffset * 0.12);
             const zIndex = Math.round(100 - Math.abs(z));
 
             const IconComp = item.icon;
@@ -234,20 +227,24 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
                   opacity,
                 }}
                 transition={{
-                  duration: 0.45,
-                  ease: [0.16, 1, 0.3, 1],
+                  duration: 0.22,
+                  ease: [0.25, 1, 0.5, 1],
                 }}
                 style={{
                   zIndex,
                   transformStyle: 'preserve-3d',
+                  willChange: 'transform, opacity',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  display: isVisible ? 'block' : 'none',
                 }}
-                className={`absolute w-[360px] cursor-pointer rounded-3xl p-7 transition-shadow duration-300 ${
+                className={`absolute w-[360px] cursor-pointer rounded-3xl p-7 transition-colors duration-150 ${
                   isCenter
-                    ? 'bg-white border-2 border-blue-500 shadow-[0_25px_45px_-10px_rgba(37,99,235,0.18)] pointer-events-auto'
+                    ? 'bg-white border-2 border-blue-500 shadow-xl pointer-events-auto'
                     : 'bg-white/95 border border-slate-200/90 shadow-sm hover:border-blue-300 pointer-events-auto'
                 }`}
               >
-                {/* Header Badge */}
+                {/* Header Number */}
                 <div className="flex items-center justify-between mb-5">
                   <span
                     className={`text-xs font-mono font-extrabold px-3 py-1 rounded-full border ${
@@ -257,9 +254,6 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
                     }`}
                   >
                     {item.num}
-                  </span>
-                  <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                    {item.badge}
                   </span>
                 </div>
 
@@ -290,20 +284,14 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (isCenter) {
-                        setSelectedCapabilityNum(item.num);
-                      } else {
-                        setActiveIndex(idx);
-                      }
+                      setActiveIndex(idx);
+                      setSelectedCapabilityNum(item.num);
                     }}
                     className="text-xs font-extrabold text-blue-600 flex items-center gap-1 group hover:text-blue-700 transition-colors"
                   >
                     <span>Explore Capability</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </button>
-                  {isCenter && (
-                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping" />
-                  )}
                 </div>
               </motion.div>
             );
@@ -332,9 +320,6 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
                   <span className="text-xs font-mono font-extrabold px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                     {item.num}
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                    {item.badge}
-                  </span>
                 </div>
 
                 <div className="flex items-center gap-3 mb-3">
@@ -354,6 +339,7 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
+                    setActiveIndex(idx);
                     setSelectedCapabilityNum(item.num);
                   }}
                   className="flex items-center text-xs font-bold text-blue-600 gap-1 hover:text-blue-700 transition-colors"
@@ -380,6 +366,7 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
           ))}
         </div>
       </div>
+      </div>
 
       {/* Capability Verbatim Detail Reader Modal */}
       <CapabilityDetailView
@@ -387,7 +374,6 @@ export const SapCapabilitiesHelixSlider: React.FC<SapCapabilitiesHelixSliderProp
         onClose={() => setSelectedCapabilityNum(null)}
         onContactClick={onContactClick}
       />
-      </div>
     </div>
   );
 };

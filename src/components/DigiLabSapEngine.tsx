@@ -414,7 +414,6 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
         onUpdate: (self) => {
           const p = self.progress; // 0 to 1
           scrollProgressRef.current = p;
-          setScrollProgress(p);
 
           let newStage = 1;
           if (p < 0.2) {
@@ -424,11 +423,17 @@ export const DigiLabSapEngine: React.FC<DigiLabSapEngineProps> = ({ onContactCli
           } else {
             newStage = 3;
             const phaseIndex = Math.min(4, Math.floor(((p - 0.45) / 0.55) * 5));
-            setActivePhaseIndex(phaseIndex);
+            setActivePhaseIndex((prev) => (prev !== phaseIndex ? phaseIndex : prev));
           }
 
-          scrollStageRef.current = newStage;
-          setScrollStage(newStage);
+          if (scrollStageRef.current !== newStage) {
+            scrollStageRef.current = newStage;
+            setScrollStage(newStage);
+          }
+
+          // Throttle progress state updates to 0.01 increments to keep main thread smooth at 60fps
+          const roundedProgress = Math.round(p * 100) / 100;
+          setScrollProgress((prev) => (Math.abs(prev - roundedProgress) >= 0.01 ? roundedProgress : prev));
         },
       });
     }, containerRef);

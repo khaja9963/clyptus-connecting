@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X,
   ChevronLeft,
   Mail,
   MapPin,
@@ -20,27 +20,36 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
   onClose,
   onContactClick,
 }) => {
-  if (!capabilityNum) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and listen for Escape key when modal is open
+  useEffect(() => {
+    if (!capabilityNum) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [capabilityNum, onClose]);
 
   const renderSharedCTA = () => (
-    <div className="mt-16 pt-10 border-t-2 border-slate-900 space-y-8">
-      {/* Return Back to Capabilities CTA Box */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-blue-50 border border-blue-200">
-        <div>
-          <h4 className="text-base font-extrabold text-slate-900">Done exploring this capability?</h4>
-          <p className="text-xs text-slate-600 font-medium">Return to the Core ERP & SAP Capabilities section to view other solutions.</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs transition-all shadow-md shrink-0 cursor-pointer group"
-        >
-          <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Core Capabilities</span>
-        </button>
-      </div>
-
+    <div className="mt-16 pt-10 border-t-2 border-slate-900">
       {/* Shared Address Footer */}
-      <div className="text-xs text-slate-600 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="text-xs text-slate-600 grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
         <div className="space-y-1">
           <span className="font-extrabold text-slate-900 text-sm block">Corporate Head Office</span>
           <p className="flex items-start gap-2 leading-relaxed text-slate-700">
@@ -59,83 +68,35 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
     </div>
   );
 
-  return (
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 bg-white overflow-y-auto w-full min-h-screen flex flex-col font-sans text-slate-900"
-      >
-        {/* Sticky Top Document Header */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-4">
+      {capabilityNum && (
+        <motion.div
+          key="capability-detail-modal"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[9999] bg-white w-screen h-screen flex flex-col font-sans text-slate-900 overflow-hidden"
+        >
+          {/* Simple Back Button Frozen at Top-Left */}
+          <div className="fixed top-5 left-5 sm:top-6 sm:left-8 z-50">
             <button
               onClick={onClose}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 hover:bg-blue-600 text-white font-extrabold text-xs transition-all shadow-sm group cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900 hover:bg-blue-600 text-white font-extrabold text-xs shadow-lg backdrop-blur-md transition-all border border-slate-700 cursor-pointer group hover:scale-105 active:scale-95"
+              aria-label="Back to capabilities"
             >
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform text-blue-400 group-hover:text-white" />
-              <span>Back to Core Capabilities</span>
-            </button>
-            <div className="hidden sm:flex items-center gap-2 border-l border-slate-200 pl-4 font-mono text-xs">
-              <span className="px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 font-extrabold">
-                CAPABILITY {capabilityNum}
-              </span>
-              <span className="text-slate-400 font-medium">•</span>
-              <span className="text-slate-500 font-bold uppercase">
-                Clyptus Enterprise Specification
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                onClose();
-                if (onContactClick) onContactClick();
-              }}
-              className="px-5 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs transition-all shadow-xs"
-            >
-              Talk to SAP Experts
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
-              aria-label="Close"
-            >
-              <X className="w-5 h-5" />
+              <span>Back</span>
             </button>
           </div>
-        </header>
 
-        {/* Floating Quick Back Button (Fixed at Bottom-Left for 1-click access anytime) */}
-        <div className="fixed bottom-6 left-6 z-50">
-          <button
-            onClick={onClose}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-slate-900/90 hover:bg-blue-600 text-white font-extrabold text-xs shadow-2xl backdrop-blur-md transition-all border border-slate-700 group cursor-pointer hover:scale-105"
-          >
-            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform text-blue-400 group-hover:text-white" />
-            <span>Back to Capabilities</span>
-          </button>
-        </div>
-
-        {/* Main Page Document Area (Full-bleed white document canvas) */}
-        <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
-          <div className="space-y-12">
-            {/* Top Content Area Back Link */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <button
-                onClick={onClose}
-                className="inline-flex items-center gap-2 text-xs font-black text-blue-600 hover:text-blue-800 transition-colors group cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span>← Back to Core ERP & SAP Capabilities Slider</span>
-              </button>
-              <span className="text-xs font-mono text-slate-400 font-bold">
-                DOCUMENT #{capabilityNum}
-              </span>
-            </div>
+          {/* Scrollable Document Area */}
+          <div className="flex-1 w-full h-full overflow-y-auto overscroll-contain">
+            <main className="w-full max-w-4xl mx-auto px-4 sm:px-8 pt-20 sm:pt-24 pb-28">
+              <div className="space-y-12">
             
             {/* ================= 01. SAP S/4HANA ================= */}
             {capabilityNum === '01' && (
@@ -210,9 +171,8 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
                     </div>
 
                     <div id="rise" className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
-                      <div className="sm:w-1/3 flex items-center gap-2">
+                      <div className="sm:w-1/3">
                         <h4 className="font-extrabold text-blue-900 text-base">RISE with SAP</h4>
-                        <span className="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">#rise</span>
                       </div>
                       <div className="sm:w-2/3">
                         <p className="text-sm text-blue-950 font-medium leading-relaxed">
@@ -222,9 +182,8 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
                     </div>
 
                     <div id="support" className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
-                      <div className="sm:w-1/3 flex items-center gap-2">
+                      <div className="sm:w-1/3">
                         <h4 className="font-extrabold text-orange-900 text-base">Application support</h4>
-                        <span className="text-[10px] font-mono font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">#support</span>
                       </div>
                       <div className="sm:w-2/3">
                         <p className="text-sm text-orange-950 font-medium leading-relaxed">
@@ -570,16 +529,15 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
                   </div>
                   <div className="divide-y divide-slate-200 border-y border-slate-200">
                     {[
-                      { mod: 'SOM', name: 'Subscription Order Management', desc: 'Master data setup, product catalog design, subscription lifecycle management, order orchestration, contract master configuration.' },
-                      { mod: 'CC', name: 'Convergent Charging', desc: 'Rating engine configuration, pricing strategy, charge calculation logic, aggregation rules, real-time usage monetization.' },
-                      { mod: 'CI', name: 'Convergent Invoicing', desc: 'Invoice document generation, multi-format output, billing run optimization, invoice consolidation, mass processing.' },
-                      { mod: 'CM', name: 'Convergent Mediation', desc: 'Collecting, validating and transforming high-volume usage data, then passing it to Convergent Charging.' },
-                      { mod: 'FI-CA & RAR', name: 'FI-CA and RAR', desc: 'Contract accounts receivable, payment processing, clearing and reconciliation, revenue recognition compliance (ASC 606 / IFRS 15), S/4HANA integration.' },
-                      { mod: 'BRIM Tech', name: 'BRIM Technical', desc: 'ABAP development and enhancements, Convergent Invoicing tuning, integration support (PI/PO, CPI).' },
+                      { name: 'Subscription Order Management', desc: 'Master data setup, product catalog design, subscription lifecycle management, order orchestration, contract master configuration.' },
+                      { name: 'Convergent Charging', desc: 'Rating engine configuration, pricing strategy, charge calculation logic, aggregation rules, real-time usage monetization.' },
+                      { name: 'Convergent Invoicing', desc: 'Invoice document generation, multi-format output, billing run optimization, invoice consolidation, mass processing.' },
+                      { name: 'Convergent Mediation', desc: 'Collecting, validating and transforming high-volume usage data, then passing it to Convergent Charging.' },
+                      { name: 'FI-CA and RAR', desc: 'Contract accounts receivable, payment processing, clearing and reconciliation, revenue recognition compliance (ASC 606 / IFRS 15), S/4HANA integration.' },
+                      { name: 'BRIM Technical', desc: 'ABAP development and enhancements, Convergent Invoicing tuning, integration support (PI/PO, CPI).' },
                     ].map((m) => (
-                      <div key={m.mod} className="py-4 flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                      <div key={m.name} className="py-4 flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                         <div className="sm:w-1/3">
-                          <span className="text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 inline-block mb-1">{m.mod}</span>
                           <h4 className="font-extrabold text-slate-900 text-sm">{m.name}</h4>
                         </div>
                         <p className="sm:w-2/3 text-sm text-slate-600 font-medium leading-relaxed">{m.desc}</p>
@@ -1019,7 +977,10 @@ export const CapabilityDetailView: React.FC<CapabilityDetailViewProps> = ({
             {renderSharedCTA()}
           </div>
         </main>
-      </motion.div>
-    </AnimatePresence>
-  );
+      </div>
+    </motion.div>
+    )}
+  </AnimatePresence>,
+  document.body
+);
 };

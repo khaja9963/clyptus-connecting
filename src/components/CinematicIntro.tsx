@@ -80,7 +80,6 @@ export const CinematicIntro: React.FC<CinematicIntroProps> = ({
           if (alpha > 85) {
             const r = imgData[index];
             const g = imgData[index + 1];
-            const b = imgData[index + 2];
             const isOrange = r > 160 && g < 130;
 
             const isInSubtitleArea = !isOrange && y >= subtitleStartY && x >= subtitleStartX;

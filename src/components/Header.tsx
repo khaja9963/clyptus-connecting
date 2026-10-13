@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-sm select-none">
       {/* Main Navbar */}
-      <div className="w-full px-4 sm:px-6 lg:px-10 py-3 flex items-center justify-between gap-4">
+      <div className="w-full px-4 sm:px-6 lg:px-10 py-2 sm:py-2.5 flex items-center justify-between gap-4">
 
         {/* Brand Logo */}
         <div className="flex items-center gap-3">
@@ -39,12 +39,12 @@ export const Header: React.FC<HeaderProps> = ({
               onPlayIntro();
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center group text-left py-1"
+            className="flex items-center group text-left py-0.5 cursor-pointer"
           >
             <img
               src="/logo.png"
               alt="Clyptus Logo"
-              className="h-11 sm:h-13 w-auto object-contain group-hover:scale-105 transition-transform"
+              className="h-14 sm:h-16 md:h-18 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-xs"
             />
           </button>
         </div>
